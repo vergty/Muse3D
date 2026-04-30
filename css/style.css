@@ -1,0 +1,223 @@
+/* ========== 全局重置 ========== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: 'Microsoft YaHei', 'PingFang SC', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #000;
+}
+
+/* ========== 信息面板 ========== */
+#info {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.75);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    z-index: 100;
+    pointer-events: none;
+    backdrop-filter: blur(8px);
+    font-size: 14px;
+    border-left: 4px solid #ffaa44;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    font-family: monospace;
+    transition: all 0.3s ease;
+}
+
+/* 悬浮效果（可选） */
+#info:hover {
+    background: rgba(0, 0, 0, 0.85);
+    transform: translateX(2px);
+}
+
+/* ========== 控制提示面板 ========== */
+#controls-info {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #ccc;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-family: monospace;
+    z-index: 100;
+    pointer-events: none;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: opacity 0.3s ease;
+}
+
+/* ========== 加载提示 ========== */
+.loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 20px;
+    background: rgba(0, 0, 0, 0.85);
+    padding: 20px 40px;
+    border-radius: 12px;
+    z-index: 1000;
+    font-family: monospace;
+    animation: pulse 1.5s ease-in-out infinite;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    letter-spacing: 2px;
+    white-space: nowrap;
+}
+
+/* 脉冲动画 */
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 0.6;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.02);
+    }
+}
+
+/* ========== 响应式设计 ========== */
+@media (max-width: 768px) {
+    #info {
+        top: 10px;
+        left: 10px;
+        padding: 8px 15px;
+        font-size: 10px;
+        backdrop-filter: blur(4px);
+    }
+
+    #controls-info {
+        bottom: 10px;
+        left: 10px;
+        padding: 6px 12px;
+        font-size: 9px;
+    }
+
+    .loading {
+        font-size: 16px;
+        padding: 15px 30px;
+        white-space: nowrap;
+    }
+}
+
+/* 针对超小屏幕（手机横屏） */
+@media (max-width: 480px) {
+    #info {
+        max-width: 80%;
+        white-space: nowrap;
+        overflow-x: auto;
+    }
+
+    .loading {
+        font-size: 14px;
+        padding: 12px 24px;
+    }
+}
+
+/* ========== 可选：添加淡入动画 ========== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#info,
+#controls-info {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* ========== 可选：打印样式（隐藏UI） ========== */
+@media print {
+
+    #info,
+    #controls-info,
+    .loading {
+        display: none;
+    }
+}
+/* ========== 展览台信息面板 ========== */
+.exhibit-info-panel {
+    position: absolute;
+    bottom: 120px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.85) 0%, rgba(30, 20, 15, 0.9) 100%);
+    backdrop-filter: blur(12px);
+    color: #f5e6d3;
+    padding: 16px 28px;
+    border-radius: 16px;
+    font-family: 'Microsoft YaHei', 'PingFang SC', monospace;
+    z-index: 200;
+    pointer-events: none;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    border-left: 4px solid #d4af37;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    max-width: 320px;
+    text-align: center;
+}
+
+.exhibit-info-panel.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.exhibit-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #d4af37;
+    margin-bottom: 8px;
+    letter-spacing: 2px;
+}
+
+.exhibit-description {
+    font-size: 13px;
+    color: #e0d8c8;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+.exhibit-hint {
+    font-size: 11px;
+    color: #aa9977;
+    font-family: monospace;
+    border-top: 1px solid rgba(212, 175, 55, 0.3);
+    padding-top: 8px;
+    margin-top: 5px;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+    .exhibit-info-panel {
+        bottom: 100px;
+        padding: 12px 20px;
+        max-width: 260px;
+    }
+    .exhibit-title {
+        font-size: 14px;
+    }
+    .exhibit-description {
+        font-size: 11px;
+    }
+}

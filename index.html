@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>三维博物馆 - 空心房间版</title>
+    <!-- 关联 CSS 文件 -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="info">
+        <strong>🏛️ 三维博物馆 - 空心房间</strong><br>
+        展品: 彩色立方体 | 浮动球体 | 展示台
+    </div>
+    <div id="controls-info">
+        🖱️ 鼠标拖拽旋转视角 | 右键平移 | 滚轮缩放 | 可以"走进"房间内部
+    </div>
+    <div id="loading" class="loading">⚡ 正在加载 Three.js...</div>
+
+    <!-- 导入映射 -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <!-- 引用外部 JS 文件（关键！） -->
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
