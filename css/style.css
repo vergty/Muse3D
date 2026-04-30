@@ -90,6 +90,42 @@ body {
     }
 }
 
+/* ========== 加载进度条（模型加载用） ========== */
+.loading-progress {
+    min-width: 280px;
+    text-align: center;
+    transition: opacity 0.3s ease;
+}
+
+.loading-title {
+    font-size: 16px;
+    margin-bottom: 16px;
+    letter-spacing: 2px;
+}
+
+.loading-bar-bg {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.loading-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #d4af37, #ffcc66);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.loading-text {
+    font-size: 12px;
+    color: #ccc;
+    letter-spacing: 1px;
+}
+
 /* ========== 响应式设计 ========== */
 @media (max-width: 768px) {
     #info {

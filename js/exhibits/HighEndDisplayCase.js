@@ -73,6 +73,10 @@ export class HighEndDisplayCase {
 
         // 加载器
         this.loader = new GLTFLoader();
+
+        // 加载回调（用于进度管理）
+        this.onModelLoad = options.onModelLoad || null;
+        this.onModelError = options.onModelError || null;
     }
 
     /**
@@ -131,6 +135,7 @@ export class HighEndDisplayCase {
                 });
 
                 this.scene.add(this.objects.model);
+                if (this.onModelLoad) this.onModelLoad(this.config.name);
                 console.log(`✅ 模型加载成功: ${this.config.modelPath}`);
                 console.log(`📍 模型位置: (${this.objects.model.position.x}, ${this.objects.model.position.y}, ${this.objects.model.position.z})`);
                 resolve();
@@ -138,6 +143,7 @@ export class HighEndDisplayCase {
             undefined,
             (error) => {
                 console.error(`❌ 模型加载失败: ${this.config.modelPath}`, error);
+                if (this.onModelError) this.onModelError(this.config.name);
                 reject(error);
             }
         );
@@ -196,78 +202,38 @@ export class HighEndDisplayCase {
     }
 
     /**
-     * 创建玻璃罩（高端质感）
+     * 创建玻璃罩（单 Mesh，使用物理透光材质）
      */
     createGlass() {
         const glassMat = new THREE.MeshPhysicalMaterial({
             color: this.config.glassColor,
-            metalness: this.config.glassMetalness,
-            roughness: this.config.glassRoughness,
+            transmission: 0.92,
+            thickness: 0.15,
+            metalness: 0.0,
+            roughness: 0.05,
+            ior: 1.5,
             transparent: true,
-            opacity: this.config.glassOpacity,
-            clearcoat: 1.0,
-            clearcoatRoughness: 0.1,
-            reflectivity: 0.3
+            opacity: 1,
+            side: THREE.DoubleSide
         });
 
         const glassHeight = this.config.glassHeight;
         const glassWidth = this.config.glassWidth;
         const glassDepth = this.config.glassDepth;
-        const glassThick = 0.05;
 
         const glassY = this.config.baseHeight + glassHeight / 2;
         const glassX = this.config.position.x;
         const glassZ = this.config.position.z;
 
-        // 前面玻璃
-        const frontGlass = new THREE.Mesh(
-            new THREE.BoxGeometry(glassWidth, glassHeight, glassThick),
+        const glassBox = new THREE.Mesh(
+            new THREE.BoxGeometry(glassWidth, glassHeight, glassDepth),
             glassMat
         );
-        frontGlass.position.set(glassX, glassY, glassZ + glassDepth / 2);
-        frontGlass.castShadow = false;
-        this.scene.add(frontGlass);
-        this.objects.glassParts.push(frontGlass);
-
-        // 后面玻璃
-        const backGlass = new THREE.Mesh(
-            new THREE.BoxGeometry(glassWidth, glassHeight, glassThick),
-            glassMat
-        );
-        backGlass.position.set(glassX, glassY, glassZ - glassDepth / 2);
-        backGlass.castShadow = false;
-        this.scene.add(backGlass);
-        this.objects.glassParts.push(backGlass);
-
-        // 左面玻璃
-        const leftGlass = new THREE.Mesh(
-            new THREE.BoxGeometry(glassThick, glassHeight, glassDepth),
-            glassMat
-        );
-        leftGlass.position.set(glassX - glassWidth / 2, glassY, glassZ);
-        leftGlass.castShadow = false;
-        this.scene.add(leftGlass);
-        this.objects.glassParts.push(leftGlass);
-
-        // 右面玻璃
-        const rightGlass = new THREE.Mesh(
-            new THREE.BoxGeometry(glassThick, glassHeight, glassDepth),
-            glassMat
-        );
-        rightGlass.position.set(glassX + glassWidth / 2, glassY, glassZ);
-        rightGlass.castShadow = false;
-        this.scene.add(rightGlass);
-        this.objects.glassParts.push(rightGlass);
-
-        // 顶面玻璃（带轻微圆角效果）
-        const topGlass = new THREE.Mesh(
-            new THREE.BoxGeometry(glassWidth, glassThick, glassDepth),
-            glassMat
-        );
-        topGlass.position.set(glassX, glassY + glassHeight / 2, glassZ);
-        topGlass.castShadow = false;
-        this.scene.add(topGlass);
-        this.objects.glassParts.push(topGlass);
+        glassBox.position.set(glassX, glassY, glassZ);
+        glassBox.castShadow = false;
+        glassBox.receiveShadow = true;
+        this.scene.add(glassBox);
+        this.objects.glassParts = [glassBox];
     }
 
     /**

@@ -8,12 +8,10 @@ import { MegaMuseum } from './rooms/MegaMuseum.js';
 import { FirstPersonControls } from './controls/FirstPersonControls.js';
 import { HighEndDisplayCaseManager } from './exhibits/HighEndDisplayCase.js';  // 改用高端展台
 import { settings } from './config/setting.js';
+import { LoadingManager } from './utils/LoadingManager.js';
 
-// ========== 隐藏加载提示 ==========
-const loadingDiv = document.getElementById('loading');
-if (loadingDiv) {
-    loadingDiv.style.display = 'none';
-}
+// ========== 加载进度管理 ==========
+const loadingManager = new LoadingManager();
 
 // ========== 初始化核心组件 ==========
 const scene = createScene();
@@ -179,8 +177,17 @@ const displayCases = [
     }
 ];
 
-// 批量添加展览台
-displayCaseManager.addDisplayCases(displayCases);
+// 批量添加展览台（带加载回调）
+const modelCount = displayCases.filter(c => c.modelPath).length;
+loadingManager.setTotal(modelCount);
+
+const casesWithCallbacks = displayCases.map(config => ({
+    ...config,
+    onModelLoad: () => loadingManager.onSuccess(config.name),
+    onModelError: () => loadingManager.onError(config.name)
+}));
+
+displayCaseManager.addDisplayCases(casesWithCallbacks);
 
 // ========== 添加准星 ==========
 const crosshair = document.createElement('div');

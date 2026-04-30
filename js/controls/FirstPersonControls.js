@@ -35,7 +35,13 @@ export class FirstPersonControls {
         
         // 碰撞检测用的墙体
         this.walls = [];
-        
+        // 预计算的墙体包围盒（避免每帧创建）
+        this.wallBoxes = [];
+        // 复用的碰撞检测对象
+        this._playerBox = new THREE.Box3();
+        this._playerSize = new THREE.Vector3(0.6, 1.6, 0.6);
+        this._tempPos = new THREE.Vector3();
+
         this.init();
     }
     
@@ -116,38 +122,33 @@ export class FirstPersonControls {
     }
     
     /**
-     * 添加墙体用于碰撞检测
+     * 添加墙体用于碰撞检测（同步预计算包围盒）
      */
     addWall(wall) {
         this.walls.push(wall);
+        if (wall.userData && wall.userData.collision) {
+            this.wallBoxes.push(new THREE.Box3().setFromObject(wall));
+        }
     }
-    
+
     /**
-     * 碰撞检测
+     * 碰撞检测（使用预计算包围盒和复用对象）
      */
     checkCollision(newPosition) {
-        // 博物馆边界限制（根据你的博物馆尺寸 24x18）
         const margin = 0.5;
-        const boundX = 11.5;   // 宽度 24/2 - margin
-        const boundZ = 8.5;    // 深度 18/2 - margin
-        
+        const boundX = 11.5;
+        const boundZ = 8.5;
+
         if (Math.abs(newPosition.x) > boundX) return true;
         if (Math.abs(newPosition.z) > boundZ) return true;
-        
-        // 与墙体的碰撞检测
-        for (let wall of this.walls) {
-            if (!wall.userData || !wall.userData.collision) continue;
-            
-            const wallBox = new THREE.Box3().setFromObject(wall);
-            const playerBox = new THREE.Box3().setFromCenterAndSize(
-                newPosition,
-                new THREE.Vector3(0.6, 1.6, 0.6)
-            );
-            if (playerBox.intersectsBox(wallBox)) {
+
+        this._playerBox.setFromCenterAndSize(newPosition, this._playerSize);
+        for (let i = 0; i < this.wallBoxes.length; i++) {
+            if (this._playerBox.intersectsBox(this.wallBoxes[i])) {
                 return true;
             }
         }
-        
+
         return false;
     }
     
@@ -199,25 +200,25 @@ export class FirstPersonControls {
         if (moveDelta.length() > 0) moveDelta.normalize();
         moveDelta.multiplyScalar(actualMoveSpeed);
         
-        // 尝试移动
-        let newPosition = this.position.clone().add(moveDelta);
-        
+        // 尝试移动（复用临时对象）
+        this._tempPos.copy(this.position).add(moveDelta);
+
         // 碰撞检测
-        if (!this.checkCollision(newPosition)) {
-            this.position.copy(newPosition);
+        if (!this.checkCollision(this._tempPos)) {
+            this.position.copy(this._tempPos);
         } else {
             // 尝试单独在 X 轴移动
-            let newX = this.position.clone();
-            newX.x += moveDelta.x;
-            if (!this.checkCollision(newX)) {
-                this.position.x = newX.x;
+            this._tempPos.copy(this.position);
+            this._tempPos.x += moveDelta.x;
+            if (!this.checkCollision(this._tempPos)) {
+                this.position.x = this._tempPos.x;
             }
-            
+
             // 尝试单独在 Z 轴移动
-            let newZ = this.position.clone();
-            newZ.z += moveDelta.z;
-            if (!this.checkCollision(newZ)) {
-                this.position.z = newZ.z;
+            this._tempPos.copy(this.position);
+            this._tempPos.z += moveDelta.z;
+            if (!this.checkCollision(this._tempPos)) {
+                this.position.z = this._tempPos.z;
             }
         }
         
