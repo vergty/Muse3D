@@ -9,7 +9,6 @@ import { FirstPersonControls } from './controls/FirstPersonControls.js';
 import { HighEndDisplayCaseManager } from './exhibits/HighEndDisplayCase.js';  // 改用高端展台
 import { settings } from './config/setting.js';
 import { LoadingManager } from './utils/LoadingManager.js';
-import { WallInfoBoard } from './exhibits/WallInfoBoard.js';
 import { ExhibitViewController } from './controls/ExhibitViewController.js';
 
 // ========== 加载进度管理 ==========
@@ -59,17 +58,6 @@ const museum = new MegaMuseum(scene, {
     addMedallion: false
 });
 museum.build();
-
-// ========== 添加墙壁说明黑板 ==========
-const infoBoard = new WallInfoBoard(scene, {
-    position: { x: 0, y: 2.8, z: -ROOM_DEPTH / 2 + 0.25 },
-    rotation: { x: 0, y: 0, z: 0 },
-    width: 5,
-    height: 2.6,
-    title: '战国青铜器',
-    content: '战国时期（公元前475年—公元前221年）是中国青铜器发展的鼎盛阶段。\n\n这一时期的青铜器突破了商周时期庄重肃穆的礼器传统，造型更加轻巧灵动，纹饰从神秘的饕餮纹转向写实的宴乐、攻战、水陆攻战等生活场景。\n\n著名的曾侯乙编钟、越王勾践剑等均出自这一时期。青铜器不仅是权力的象征，更承载了古代工匠高超的冶铸技艺与独特的审美追求。'
-});
-infoBoard.build();
 
 // ========== 创建高端展览台管理器 ==========
 const displayCaseManager = new HighEndDisplayCaseManager(scene);

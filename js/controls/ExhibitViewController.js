@@ -71,6 +71,10 @@ export class ExhibitViewController {
         this.phi = Math.acos(Math.max(-1, Math.min(1, dy / this.radius)));
         this.phi = Math.max(0.3, Math.min(Math.PI - 0.3, this.phi));
 
+        // 隐藏展台的靠近提示面板（如果存在）
+        this._hiddenInfoPanels = document.querySelectorAll('.exhibit-info-panel');
+        this._hiddenInfoPanels.forEach(el => { el.style.opacity = '0'; });
+
         // 创建UI
         this.createOverlay();
         this.createInfoPanel(exhibitCase.config.name, longDescription);
@@ -103,6 +107,9 @@ export class ExhibitViewController {
             this.infoPanel.style.opacity = '0';
             setTimeout(() => this.infoPanel.remove(), 300);
         }
+
+        // 恢复展台的靠近提示面板
+        this._hiddenInfoPanels.forEach(el => { el.style.opacity = '1'; });
 
         this.unbindEvents();
         this.isActive = false;
@@ -163,10 +170,10 @@ export class ExhibitViewController {
     createInfoPanel(name, description) {
         this.infoPanel = document.createElement('div');
         this.infoPanel.style.position = 'absolute';
-        this.infoPanel.style.bottom = '30px';
+        this.infoPanel.style.top = '30px';
         this.infoPanel.style.left = '50%';
-        this.infoPanel.style.transform = 'translateX(-50%) translateY(20px)';
-        this.infoPanel.style.background = 'linear-gradient(180deg, rgba(20,20,25,0.95) 0%, rgba(10,10,15,0.98) 100%)';
+        this.infoPanel.style.transform = 'translateX(-50%) translateY(-20px)';
+        this.infoPanel.style.background = 'linear-gradient(180deg, rgba(10,10,15,0.98) 0%, rgba(20,20,25,0.95) 100%)';
         this.infoPanel.style.color = '#e8e0d0';
         this.infoPanel.style.padding = '24px 40px';
         this.infoPanel.style.borderRadius = '16px';
@@ -175,13 +182,13 @@ export class ExhibitViewController {
         this.infoPanel.style.border = '1px solid rgba(212,175,55,0.4)';
         this.infoPanel.style.maxWidth = '700px';
         this.infoPanel.style.width = '85%';
-        this.infoPanel.style.boxShadow = '0 -8px 40px rgba(0,0,0,0.5)';
+        this.infoPanel.style.boxShadow = '0 8px 40px rgba(0,0,0,0.5)';
         this.infoPanel.style.transition = 'all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1)';
         this.infoPanel.style.pointerEvents = 'auto';
 
         this.infoPanel.innerHTML = `
             <h3 style="margin:0 0 12px 0; color:#d4af37; font-size:20px; text-align:center; letter-spacing:2px">${name}</h3>
-            <p style="margin:0; line-height:1.9; font-size:14px; text-align:justify; max-height:180px; overflow-y:auto; padding-right:8px">${description}</p>
+            <p style="margin:0; line-height:1.9; font-size:14px; text-align:justify; max-height:140px; overflow-y:auto; padding-right:8px">${description}</p>
             <div style="margin-top:14px; text-align:center; font-size:12px; color:#887755; border-top:1px solid #444; padding-top:10px">
                 🖱️ 拖拽鼠标旋转查看 &nbsp;|&nbsp; ⌨️ ESC 或点击此处退出
             </div>

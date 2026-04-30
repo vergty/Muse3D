@@ -17,6 +17,7 @@ export class HighEndDisplayCase {
             // 名称（用于信息显示）
             name: options.name || '展品',
             description: options.description || '暂无描述',
+            longDescription: options.longDescription || options.description || '暂无描述',
 
             // 模型路径（新增）
             modelPath: options.modelPath || null,  // 例如: 'models/vase.glb'
