@@ -42,6 +42,10 @@ export class FirstPersonControls {
         this._playerSize = new THREE.Vector3(0.6, 1.6, 0.6);
         this._tempPos = new THREE.Vector3();
 
+        // 移动边界（根据房间尺寸动态设置）
+        this.boundX = options.boundX || 11.5;
+        this.boundZ = options.boundZ || 8.5;
+
         this.init();
     }
     
@@ -135,12 +139,8 @@ export class FirstPersonControls {
      * 碰撞检测（使用预计算包围盒和复用对象）
      */
     checkCollision(newPosition) {
-        const margin = 0.5;
-        const boundX = 11.5;
-        const boundZ = 8.5;
-
-        if (Math.abs(newPosition.x) > boundX) return true;
-        if (Math.abs(newPosition.z) > boundZ) return true;
+        if (Math.abs(newPosition.x) > this.boundX) return true;
+        if (Math.abs(newPosition.z) > this.boundZ) return true;
 
         this._playerBox.setFromCenterAndSize(newPosition, this._playerSize);
         for (let i = 0; i < this.wallBoxes.length; i++) {
@@ -150,6 +150,14 @@ export class FirstPersonControls {
         }
 
         return false;
+    }
+
+    /**
+     * 设置移动边界
+     */
+    setBounds(boundX, boundZ) {
+        this.boundX = boundX;
+        this.boundZ = boundZ;
     }
     
     /**

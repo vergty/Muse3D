@@ -446,8 +446,16 @@ export class HighEndDisplayCase {
         return {
             name: this.config.name,
             description: this.config.description,
+            longDescription: this.config.longDescription || this.config.description,
             position: this.config.position
         };
+    }
+
+    /**
+     * 获取展品模型
+     */
+    getModel() {
+        return this.objects.model;
     }
 
     /**

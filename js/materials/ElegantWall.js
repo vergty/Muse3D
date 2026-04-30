@@ -96,6 +96,16 @@ export class ElegantWall {
                 roughness: 0.45,
                 metalness: 0.02,
                 hasVeins: false
+            },
+            modernDark: {
+                name: '现代深色墙面',
+                primary: 0x252525,
+                secondary: 0x2e2e2e,
+                accent: 0x3a3a3a,
+                veinColor: 0x333333,
+                roughness: 0.45,
+                metalness: 0.1,
+                hasVeins: false
             }
         };
         

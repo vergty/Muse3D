@@ -36,7 +36,10 @@ export class MegaMuseum {
             addWallPanels: options.addWallPanels || false,
             addWallLights: options.addWallLights || false
         };
-        
+
+        // 地板美缝选项
+        this.addGrout = options.addGrout !== false;
+
         this.floor = null;
         this.walls = null;
         this.ceiling = null;
@@ -63,7 +66,7 @@ export class MegaMuseum {
             depth: this.depth,
             type: this.floorType,
             tileSize: 1.2,
-            addGrout: true,
+            addGrout: this.addGrout,
             addReflection: true,
             roughness: 0.25,
             metalness: 0.5

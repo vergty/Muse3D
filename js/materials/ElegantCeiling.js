@@ -80,6 +80,14 @@ export class ElegantCeiling {
                 primary: 0x0a0a2a,
                 accent: 0xffaa66,
                 hasStars: true
+            },
+            // 现代深色
+            modernDark: {
+                name: '现代深色天花',
+                primary: 0x1e1e1e,
+                accent: 0x2a2a2a,
+                hasPanels: true,
+                panelSize: 2.0
             }
         };
         
@@ -114,6 +122,9 @@ export class ElegantCeiling {
                 break;
             case 'starry':
                 this.createStarryCeiling();
+                break;
+            case 'modernDark':
+                this.createModernDarkCeiling();
                 break;
             default:
                 this.createCofferedCeiling();
@@ -295,16 +306,12 @@ export class ElegantCeiling {
      * 现代简约天花板
      */
     createModernCeiling() {
-        const panelSize = this.style.panelSize || 2.0;
-        
         const ceilingMat = new THREE.MeshStandardMaterial({
             color: this.style.primary,
             roughness: 0.5,
-            metalness: 0.05,
-            emissive: 0x222222,
-            emissiveIntensity: 0.1
+            metalness: 0.05
         });
-        
+
         const ceiling = new THREE.Mesh(
             new THREE.BoxGeometry(this.config.width - 0.2, 0.1, this.config.depth - 0.2),
             ceilingMat
@@ -312,29 +319,9 @@ export class ElegantCeiling {
         ceiling.position.set(0, this.config.height - 0.05, 0);
         ceiling.receiveShadow = true;
         this.ceilingGroup.add(ceiling);
-        
-        // 添加嵌入式灯带
-        const lightMat = new THREE.MeshStandardMaterial({
-            color: 0xffeedd,
-            emissive: 0xffaa66,
-            emissiveIntensity: 0.3,
-            transparent: true,
-            opacity: 0.8
-        });
-        
-        const lightPositions = [
-            [-5, -3], [5, -3], [0, 0], [-5, 3], [5, 3]
-        ];
-        
-        lightPositions.forEach(pos => {
-            const lightPanel = new THREE.Mesh(
-                new THREE.BoxGeometry(1.2, 0.05, 1.2),
-                lightMat
-            );
-            lightPanel.position.set(pos[0], this.config.height - 0.03, pos[1]);
-            lightPanel.castShadow = false;
-            this.ceilingGroup.add(lightPanel);
-        });
+
+        // 添加两侧小灯泡
+        this.addCeilingSpotlights();
     }
     
     /**
@@ -458,6 +445,66 @@ export class ElegantCeiling {
         }
     }
     
+    /**
+     * 现代深色天花板（两侧小灯泡）
+     */
+    createModernDarkCeiling() {
+        const ceilingMat = new THREE.MeshStandardMaterial({
+            color: this.style.primary,
+            roughness: 0.7,
+            metalness: 0.05
+        });
+
+        const ceiling = new THREE.Mesh(
+            new THREE.BoxGeometry(this.config.width - 0.2, 0.1, this.config.depth - 0.2),
+            ceilingMat
+        );
+        ceiling.position.set(0, this.config.height - 0.05, 0);
+        ceiling.receiveShadow = true;
+        this.ceilingGroup.add(ceiling);
+
+        // 添加两侧小灯泡
+        this.addCeilingSpotlights();
+    }
+
+    /**
+     * 天花板两侧小灯泡
+     */
+    addCeilingSpotlights() {
+        const bulbMat = new THREE.MeshStandardMaterial({
+            color: 0xfff5e6,
+            emissive: 0xffddaa,
+            emissiveIntensity: 1.5,
+            metalness: 0.1,
+            roughness: 0.1
+        });
+
+        const spacing = Math.max(this.config.width / 6, 3);
+        const countX = Math.max(Math.floor(this.config.width / spacing), 3);
+
+        for (let i = 0; i <= countX; i++) {
+            const x = -this.config.width / 2 + i * spacing;
+
+            // 北侧一排灯泡
+            const bulbN = new THREE.Mesh(new THREE.SphereGeometry(0.1, 16, 16), bulbMat);
+            bulbN.position.set(x, this.config.height - 0.08, -this.config.depth / 2 + 0.6);
+            this.ceilingGroup.add(bulbN);
+
+            const lightN = new THREE.PointLight(0xfff5e6, 0.8, 12);
+            lightN.position.set(x, this.config.height - 0.3, -this.config.depth / 2 + 0.6);
+            this.ceilingGroup.add(lightN);
+
+            // 南侧一排灯泡
+            const bulbS = new THREE.Mesh(new THREE.SphereGeometry(0.1, 16, 16), bulbMat);
+            bulbS.position.set(x, this.config.height - 0.08, this.config.depth / 2 - 0.6);
+            this.ceilingGroup.add(bulbS);
+
+            const lightS = new THREE.PointLight(0xfff5e6, 0.8, 12);
+            lightS.position.set(x, this.config.height - 0.3, this.config.depth / 2 - 0.6);
+            this.ceilingGroup.add(lightS);
+        }
+    }
+
     /**
      * 创建石膏纹理
      */
