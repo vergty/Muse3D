@@ -52,8 +52,7 @@ export class MegaMuseum {
         this.createFloor();
         this.createWalls();
         this.createCeiling();
-        this.createEntrance();
-        
+
         return this;
     }
     
@@ -107,38 +106,5 @@ export class MegaMuseum {
             castShadow: this.ceilingOptions.castShadow  // 传递阴影设置
         });
         this.ceiling.build();
-    }
-    
-    /**
-     * 创建入口
-     */
-    createEntrance() {
-        const doorFrameMat = new THREE.MeshStandardMaterial({ color: 0xbc9a6c });
-        const doorWidth = 2.5;
-        const doorHeight = 3;
-        
-        const leftPillar = new THREE.Mesh(
-            new THREE.BoxGeometry(0.2, doorHeight, 0.2),
-            doorFrameMat
-        );
-        leftPillar.position.set(-1.3, doorHeight / 2, this.depth / 2 + 0.05);
-        leftPillar.castShadow = false;  // 门框不投射阴影
-        this.scene.add(leftPillar);
-        
-        const rightPillar = new THREE.Mesh(
-            new THREE.BoxGeometry(0.2, doorHeight, 0.2),
-            doorFrameMat
-        );
-        rightPillar.position.set(1.3, doorHeight / 2, this.depth / 2 + 0.05);
-        rightPillar.castShadow = false;
-        this.scene.add(rightPillar);
-        
-        const lintel = new THREE.Mesh(
-            new THREE.BoxGeometry(doorWidth, 0.2, 0.2),
-            doorFrameMat
-        );
-        lintel.position.set(0, doorHeight, this.depth / 2 + 0.05);
-        lintel.castShadow = false;
-        this.scene.add(lintel);
     }
 }

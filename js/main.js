@@ -242,7 +242,8 @@ controlsInfo.innerHTML = `
     ⌨️ WASD 移动 | 🖱️ 鼠标旋转视角<br>
     🔓 ESC 解锁鼠标<br>
     🏛️ 共有 ${displayCaseManager.getAll().length} 个展览台<br>
-    💡 靠近展台自动显示信息
+    💡 靠近展台自动显示信息<br>
+    🔭 按 F 键切换俯瞰全景
 `;
 document.body.appendChild(controlsInfo);
 
@@ -257,12 +258,50 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
+// ========== 俯瞰模式 ==========
+let isTopView = false;
+let savedPlayerState = null;
+
+function enterTopView() {
+    savedPlayerState = {
+        position: playerControls.position.clone(),
+        euler: playerControls.euler.clone(),
+        fov: camera.fov
+    };
+    // 隐藏天花板，从上方看室内
+    if (museum.ceiling && museum.ceiling.ceilingGroup) {
+        museum.ceiling.ceilingGroup.visible = false;
+    }
+    camera.fov = 100;
+    camera.updateProjectionMatrix();
+    camera.position.set(0, 9, 0);
+    camera.rotation.set(-Math.PI / 2, 0, 0);
+    isTopView = true;
+    if (document.pointerLockElement) {
+        document.exitPointerLock();
+    }
+}
+
+function exitTopView() {
+    if (savedPlayerState) {
+        playerControls.position.copy(savedPlayerState.position);
+        playerControls.euler.copy(savedPlayerState.euler);
+        playerControls.updateCamera();
+        camera.fov = savedPlayerState.fov || 75;
+        camera.updateProjectionMatrix();
+    }
+    if (museum.ceiling && museum.ceiling.ceilingGroup) {
+        museum.ceiling.ceilingGroup.visible = true;
+    }
+    isTopView = false;
+}
+
 // ========== 动画循环 ==========
 function animate() {
     const deltaTime = Math.min(clock.getDelta(), 0.033);
-    
-    // 展品查看模式下暂停第一人称控制
-    if (!exhibitViewer.isActive) {
+
+    // 展品查看模式或俯瞰模式下暂停第一人称控制
+    if (!exhibitViewer.isActive && !isTopView) {
         playerControls.update(deltaTime);
         displayCaseManager.updateProximity(playerControls.position);
     }
@@ -274,8 +313,13 @@ function animate() {
 }
 animate();
 
-// ========== 键盘交互（按 E 查看详情） ==========
+// ========== 键盘交互（按 E 查看详情，按 F 切换俯瞰） ==========
 window.addEventListener('keydown', (e) => {
+    if (e.code === 'KeyF') {
+        if (isTopView) exitTopView();
+        else enterTopView();
+        return;
+    }
     if (e.code === 'KeyE') {
         // 查找当前最近的展台
         let nearestCase = null;
@@ -307,7 +351,7 @@ console.log('✅ 博物馆构建完成！');
 console.log(`🏛️ 博物馆尺寸：${ROOM_WIDTH} x ${ROOM_DEPTH} x ${ROOM_HEIGHT}`);
 console.log('📦 高端展览台数量：', displayCaseManager.getAll().length);
 console.log('🎮 第一人称控制已启用');
-console.log('💡 提示：靠近展台自动显示信息，按 E 键查看详情');
+console.log('💡 提示：靠近展台自动显示信息，按 E 键查看详情，按 F 键切换俯瞰全景');
 console.log('📍 展览台位置：');
 displayCaseManager.getAll().forEach((dc, i) => {
     const pos = dc.getPosition();
