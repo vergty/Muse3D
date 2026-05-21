@@ -470,6 +470,24 @@ export class HighEndDisplayCase {
     }
 
     /**
+     * 获取碰撞包围盒（底座 + 玻璃罩）
+     */
+    getCollisionBox() {
+        const halfW = Math.max(this.config.baseWidth, this.config.glassWidth) / 2;
+        const halfD = Math.max(this.config.baseDepth, this.config.glassDepth) / 2;
+        const height = this.config.baseHeight + this.config.glassHeight;
+
+        const center = new THREE.Vector3(
+            this.config.position.x,
+            height / 2,
+            this.config.position.z
+        );
+        const size = new THREE.Vector3(halfW * 2, height, halfD * 2);
+
+        return new THREE.Box3().setFromCenterAndSize(center, size);
+    }
+
+    /**
      * 移除展览台
      */
     remove() {

@@ -32,11 +32,15 @@ export class FirstPersonControls {
         
         // 鼠标锁定状态
         this.locked = false;
+        // 控制器启用状态（用于展品查看等模式临时禁用）
+        this.enabled = true;
         
         // 碰撞检测用的墙体
         this.walls = [];
         // 预计算的墙体包围盒（避免每帧创建）
         this.wallBoxes = [];
+        // 展品/障碍物包围盒
+        this.obstacleBoxes = [];
         // 复用的碰撞检测对象
         this._playerBox = new THREE.Box3();
         this._playerSize = new THREE.Vector3(0.6, 1.6, 0.6);
@@ -66,6 +70,7 @@ export class FirstPersonControls {
     }
     
     lock() {
+        if (!this.enabled) return;
         this.domElement.requestPointerLock();
     }
     
@@ -136,6 +141,13 @@ export class FirstPersonControls {
     }
 
     /**
+     * 添加障碍物包围盒（展品等）
+     */
+    addObstacle(box) {
+        this.obstacleBoxes.push(box);
+    }
+
+    /**
      * 碰撞检测（使用预计算包围盒和复用对象）
      */
     checkCollision(newPosition) {
@@ -145,6 +157,11 @@ export class FirstPersonControls {
         this._playerBox.setFromCenterAndSize(newPosition, this._playerSize);
         for (let i = 0; i < this.wallBoxes.length; i++) {
             if (this._playerBox.intersectsBox(this.wallBoxes[i])) {
+                return true;
+            }
+        }
+        for (let i = 0; i < this.obstacleBoxes.length; i++) {
+            if (this._playerBox.intersectsBox(this.obstacleBoxes[i])) {
                 return true;
             }
         }

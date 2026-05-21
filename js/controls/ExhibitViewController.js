@@ -24,6 +24,9 @@ export class ExhibitViewController {
         // 保存的相机状态
         this.savedState = null;
 
+        // 退出回调
+        this.onExit = null;
+
         // DOM元素
         this.overlay = null;
         this.infoPanel = null;
@@ -113,6 +116,7 @@ export class ExhibitViewController {
 
         this.unbindEvents();
         this.isActive = false;
+        if (this.onExit) this.onExit();
     }
 
     /**

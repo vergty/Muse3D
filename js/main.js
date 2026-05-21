@@ -22,8 +22,10 @@ const renderer = createRenderer();
 // ========== 展品特写查看控制器 ==========
 const exhibitViewer = new ExhibitViewController(camera, renderer.domElement);
 
-// 设置相机初始位置
-camera.position.set(0, 1.6, 12);
+// 退出特写模式时恢复第一人称控制
+exhibitViewer.onExit = () => {
+    playerControls.enabled = true;
+};
 
 // ========== 添加控制器 ==========
 const playerControls = new FirstPersonControls(camera, renderer.domElement, scene, {
@@ -33,6 +35,9 @@ const playerControls = new FirstPersonControls(camera, renderer.domElement, scen
     boundX: 17.5,
     boundZ: 13.5
 });
+
+// 设置初始位置：房间南侧，面朝中心
+playerControls.resetPosition(0, 12);
 
 // ========== 添加光源 ==========
 setupLights(scene);
@@ -209,6 +214,11 @@ const casesWithCallbacks = displayCases.map(config => ({
 
 displayCaseManager.addDisplayCases(casesWithCallbacks);
 
+// 注册展品碰撞盒
+displayCaseManager.getAll().forEach(displayCase => {
+    playerControls.addObstacle(displayCase.getCollisionBox());
+});
+
 // ========== 添加准星 ==========
 const crosshair = document.createElement('div');
 crosshair.style.position = 'absolute';
@@ -341,6 +351,7 @@ window.addEventListener('keydown', (e) => {
         if (nearestCase) {
             const info = nearestCase.getInfo();
             console.log(`📋 进入展品查看模式：${info.name}`);
+            playerControls.enabled = false;
             exhibitViewer.enter(nearestCase, info.longDescription);
         }
     }
